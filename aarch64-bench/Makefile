@@ -6,7 +6,10 @@ TARGET = bench
 CC  ?= gcc
 LD  := $(CC)
 
-SOURCES = hal/hal.c bench.c ntt_zetas.c ntt.S
+SRC_C := hal/hal.c bench.c ntt_zetas.c group7/mul512_kara_asm.c group7/mod.c group7/mul512_kara.c
+SRC_S := ntt.S group7/schoolbook256_mul.S   # <── 新增 .S
+
+SOURCES := $(SRC_C) $(SRC_S)
 
 CFLAGS := \
 	-Wall \
@@ -29,6 +32,10 @@ CFLAGS := \
 	-MMD \
 	$(CFLAGS)
 
+ifeq ($(C_KARA),1)
+	CFLAGS += -DC_KARATSUBA
+endif
+
 ifeq ($(CYCLES),PMU)
 	CFLAGS += -DPMU_CYCLES
 endif
@@ -44,7 +51,7 @@ endif
 all: $(TARGET)
 
 $(TARGET): $(SOURCES)
-	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)
+	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET) -lgmp
 
 clean:
 	-$(RM) -rf $(TARGET) *.d
