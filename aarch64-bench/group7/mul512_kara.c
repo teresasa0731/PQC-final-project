@@ -104,9 +104,9 @@ void karatsuba_512_mul(const uint32_t *a, const uint32_t *b, uint32_t *result)
     sub_n(z1, z1, z0, 16);
     sub_n(z1, z1, z2, 16);
 
-    // 合成結果 result = z0 + (z1 << 128) + (z2 << 256)
+    // result = z0 + (z1 << 128) + (z2 << 256)
     memset(result, 0, 16 * sizeof(uint32_t));
     memcpy(result, z0, 8 * sizeof(uint32_t));       // z0
-    add_n(result + 4, z1, 12);                      // z1 在中間 (位移128位元)
-    add_n(result + 8, z2, 8);                       // z2 在高位 (位移256位元)
+    add_n(result + 4, z1, 12);                      // z1 << 128
+    add_n(result + 8, z2, 8);                       // z2 << 256
 }
