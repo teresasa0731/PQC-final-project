@@ -12,14 +12,14 @@
 #include <gmp.h>
 #include <time.h>
 extern void karatsuba_512_mul(const uint32_t *a, const uint32_t *b, uint32_t *result);
-extern void karatsuba_512_mul_asm(const uint32_t *a, const uint32_t *b, uint32_t *result);
+// extern void karatsuba_512_mul_asm(const uint32_t *a, const uint32_t *b, uint32_t *result);
 
 extern void mod_2to512_minus1(uint32_t *x);
 extern void mod_2to256_minus1(uint32_t *x);
 
 // #define checkAB
 #define checkKARA
-#define checkMOD
+// #define checkMOD
 #define KARA_ASM
 
 #define NWARMUP 50
@@ -114,7 +114,7 @@ static int bench(void)
       mpz_import(A, LIMBS, -1, sizeof(uint32_t), 0, 0, a);
       mpz_import(B, LIMBS, -1, sizeof(uint32_t), 0, 0, b);
       mpz_mul(R, A, B);
-      mpz_mod(R, R, M);
+      // mpz_mod(R, R, M);
     }
 
     t0 = get_cyclecounter();
@@ -123,7 +123,7 @@ static int bench(void)
       mpz_import(A, LIMBS, -1, sizeof(uint32_t), 0, 0, a);
       mpz_import(B, LIMBS, -1, sizeof(uint32_t), 0, 0, b);
       mpz_mul(R, A, B);
-      mpz_mod(R, R, M);
+      // mpz_mod(R, R, M);
     }
     t1 = get_cyclecounter();
     cycles_mpz[i] = t1 - t0;
@@ -142,23 +142,24 @@ static int bench(void)
   printf("========= your_mul (Karatsuba with pure C) ==========\n");
 
   uint64_t cycles_karatsuba[NTESTS];
-  uint32_t result[16], raw_result[16];
+  // uint32_t result[16];
+  uint32_t raw_result[16];
 
   for (i = 0; i < NTESTS; i++)
   {
     for (j = 0; j < NWARMUP; j++)
     {
       karatsuba_512_mul(a, b, raw_result);
-      memcpy(result, raw_result, sizeof(result));
-      mod_2to256_minus1(result);
+      // memcpy(result, raw_result, sizeof(result));
+      // mod_2to256_minus1(result);
     }
 
     t0 = get_cyclecounter();
     for (j = 0; j < NITERATIONS; j++)
     {
       karatsuba_512_mul(a, b, raw_result);
-      memcpy(result, raw_result, sizeof(result));
-      mod_2to256_minus1(result);
+      // memcpy(result, raw_result, sizeof(result));
+      // mod_2to256_minus1(result);
     }
     t1 = get_cyclecounter();
     cycles_karatsuba[i] = t1 - t0;
@@ -174,23 +175,24 @@ static int bench(void)
   printf("========= your_mul (Karatsuba with partial assembly) ==========\n");
 
   uint64_t asm_cycles_karatsuba[NTESTS];
-  uint32_t asm_result[16], asm_raw_result[16];
+  // uint32_t asm_result[16];
+  uint32_t asm_raw_result[16];
 
   for (i = 0; i < NTESTS; i++)
   {
     for (j = 0; j < NWARMUP; j++)
     {
       karatsuba_512_mul_asm(a, b, asm_raw_result);
-      memcpy(asm_result, asm_raw_result, sizeof(asm_result));
-      mod_2to256_minus1(asm_result);
+      // memcpy(asm_result, asm_raw_result, sizeof(asm_result));
+      // mod_2to256_minus1(asm_result);
     }
 
     t0 = get_cyclecounter();
     for (j = 0; j < NITERATIONS; j++)
     {
       karatsuba_512_mul_asm(a, b, asm_raw_result);
-      memcpy(asm_result, asm_raw_result, sizeof(asm_result));
-      mod_2to256_minus1(asm_result);
+      // memcpy(asm_result, asm_raw_result, sizeof(asm_result));
+      // mod_2to256_minus1(asm_result);
     }
     t1 = get_cyclecounter();
     asm_cycles_karatsuba[i] = t1 - t0;
@@ -227,23 +229,23 @@ static int bench(void)
   mpz_clear(RAW_KARA);
 #endif
 
-#ifdef checkMOD
-  // Compare mod result
-  mpz_t TMP;
-  mpz_init(TMP);
-  mpz_import(TMP, 8, -1, sizeof(uint32_t), 0, 0, result);
-  gmp_printf("\nGMP mod P: %Zx\n", R);
-  gmp_printf("Our mod P: %Zx\n", TMP);
-  if (mpz_cmp(R, TMP) != 0)
-  {
-    printf("Mismatch after mod: mod_2to512_minus1 is WRONG\n");
-  }
-  else
-  {
-    printf("Mod result matches: mod_2to256_minus1 is correct\n");
-  }
-  mpz_clear(TMP);
-#endif
+// #ifdef checkMOD
+//   // Compare mod result
+//   mpz_t TMP;
+//   mpz_init(TMP);
+//   mpz_import(TMP, 8, -1, sizeof(uint32_t), 0, 0, result);
+//   gmp_printf("\nGMP mod P: %Zx\n", R);
+//   gmp_printf("Our mod P: %Zx\n", TMP);
+//   if (mpz_cmp(R, TMP) != 0)
+//   {
+//     printf("Mismatch after mod: mod_2to512_minus1 is WRONG\n");
+//   }
+//   else
+//   {
+//     printf("Mod result matches: mod_2to256_minus1 is correct\n");
+//   }
+//   mpz_clear(TMP);
+// #endif
 
 
 
