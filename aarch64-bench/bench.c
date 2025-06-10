@@ -12,9 +12,9 @@
 #include <gmp.h>
 #include <time.h>
 extern void karatsuba_512_mul(const uint32_t *a, const uint32_t *b, uint32_t *result);
-// extern void karatsuba_512_mul_asm(const uint32_t *a, const uint32_t *b, uint32_t *result);
+extern void karatsuba_512_mul_asm(const uint32_t *a, const uint32_t *b, uint32_t *result);
 
-extern void mod_2to512_minus1(uint32_t *x);
+// extern void mod_2to512_minus1(uint32_t *x);
 extern void mod_2to256_minus1(uint32_t *x);
 
 // #define checkAB
